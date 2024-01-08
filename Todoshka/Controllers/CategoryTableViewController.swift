@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 class CategoryTableViewController: UITableViewController {
     
@@ -18,9 +19,7 @@ class CategoryTableViewController: UITableViewController {
         
         setupNavBar()
         
-        let example = Category(context: context)
-        example.name = "Blalba"
-        categories.append(example)
+        loadCategories()
         
     }
 
@@ -46,15 +45,77 @@ class CategoryTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            categories.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            deleteCategory(indexPath)
         }
     }
     
+    // MARK: - IBAction
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var categoryNameTextField = UITextField()
+        
+        let alert = UIAlertController(title: "Create Category", message: "", preferredStyle: .alert)
+        
+        alert.addTextField { textfield in
+            textfield.placeholder = "Category name"
+            categoryNameTextField = textfield
+        }
+        
+        let create = UIAlertAction(title: "Create", style: .default) { action in
+            guard let categoryName = categoryNameTextField.text else { return }
+            
+            let category = Category(context: self.context)
+            category.name = categoryName
+            self.categories.append(category)
+            
+            self.saveCategory()
+            self.tableView.reloadData()
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .destructive) { action in
+            alert.dismiss(animated: true)
+        }
+        
+        alert.addAction(create)
+        alert.addAction(cancel)
+        present(alert, animated: true)
+        
+    }
+
+}
+
+// MARK: - Data Manipulation Methods
+extension CategoryTableViewController {
     
+    func loadCategories() {
+        let request: NSFetchRequest<Category> = Category.fetchRequest()
+        
+        do {
+            categories = try context.fetch(request)
+        } catch {
+            print("Error! loadCategories(): \(error)")
+        }
+    }
     
+    func saveCategory() {
+        do {
+            try context.save()
+        } catch {
+            print("Error! saveCategory(): \(error)")
+        }
+    }
     
-    
+    func deleteCategory(_ index: IndexPath) {
+        context.delete(categories[index.row])
+        categories.remove(at: index.row)
+        saveCategory()
+        tableView.deleteRows(at: [index], with: .fade)
+    }
+
+}
+
+// MARK: - Setup Method Sections
+extension CategoryTableViewController {
     func setupNavBar() {
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -62,5 +123,4 @@ class CategoryTableViewController: UITableViewController {
         navigationController?.navigationBar.standardAppearance = appearance;
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
     }
-
 }
