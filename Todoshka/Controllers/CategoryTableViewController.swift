@@ -17,6 +17,8 @@ class CategoryTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+//        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        
         setupNavBar()
         
         loadCategories()
@@ -58,11 +60,17 @@ class CategoryTableViewController: UITableViewController {
         
         alert.addTextField { textfield in
             textfield.placeholder = "Category name"
+            textfield.autocapitalizationType = .sentences
             categoryNameTextField = textfield
         }
         
         let create = UIAlertAction(title: "Create", style: .default) { action in
-            guard let categoryName = categoryNameTextField.text else { return }
+            guard let 
+                    categoryName = categoryNameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines),
+                    !categoryName.isEmpty
+            else {
+                return
+            }
             
             let category = Category(context: self.context)
             category.name = categoryName
@@ -76,25 +84,54 @@ class CategoryTableViewController: UITableViewController {
             alert.dismiss(animated: true)
         }
         
-        alert.addAction(create)
         alert.addAction(cancel)
+        alert.addAction(create)
         present(alert, animated: true)
         
     }
 
 }
 
+// MARK: - SearchBar Delegate
+extension CategoryTableViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text else { return }
+        
+        // 1. Create request
+        let request: NSFetchRequest<Category> = Category.fetchRequest()
+        
+        // 2. Create predicate(WHERE in SQL)
+        request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", text)
+        
+        // 3. Sort data from request
+        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        
+        loadCategories(with: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadCategories()
+    
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
+}
+
 // MARK: - Data Manipulation Methods
 extension CategoryTableViewController {
     
-    func loadCategories() {
-        let request: NSFetchRequest<Category> = Category.fetchRequest()
-        
+    func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
         do {
             categories = try context.fetch(request)
         } catch {
             print("Error! loadCategories(): \(error)")
         }
+        
+        tableView.reloadData()
     }
     
     func saveCategory() {
