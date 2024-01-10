@@ -36,6 +36,7 @@ class CategoryTableViewController: UITableViewController {
         var content = cell.defaultContentConfiguration()
         content.text = categories[indexPath.row].name
         
+        cell.accessoryType = .disclosureIndicator
         cell.contentConfiguration = content
         
         return cell
@@ -51,6 +52,19 @@ class CategoryTableViewController: UITableViewController {
         }
     }
     
+    
+    // MARK: - Table view delegate methods
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        performSegue(withIdentifier: "goToListOfItems", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! ItemsTableViewController
+        
+        if let indexPath = tableView.indexPathForSelectedRow {
+            destinationVC.selectedCategory = categories[indexPath.row]
+        }
+    }
     // MARK: - IBAction
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         
@@ -159,5 +173,6 @@ extension CategoryTableViewController {
         appearance.backgroundColor = .orange
         navigationController?.navigationBar.standardAppearance = appearance;
         navigationController?.navigationBar.scrollEdgeAppearance = navigationController?.navigationBar.standardAppearance
+        navigationController?.navigationBar.tintColor = .black
     }
 }

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7581077F2B4F518F0090D8CD /* ItemsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7581077E2B4F518F0090D8CD /* ItemsTableViewController.swift */; };
 		75FDF1612B4B290D00E1460A /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75FDF1602B4B290D00E1460A /* AppDelegate.swift */; };
 		75FDF1632B4B290D00E1460A /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75FDF1622B4B290D00E1460A /* SceneDelegate.swift */; };
 		75FDF1682B4B290D00E1460A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 75FDF1662B4B290D00E1460A /* Main.storyboard */; };
@@ -17,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7581077E2B4F518F0090D8CD /* ItemsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemsTableViewController.swift; sourceTree = "<group>"; };
 		75FDF15D2B4B290D00E1460A /* Todoshka.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Todoshka.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		75FDF1602B4B290D00E1460A /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		75FDF1622B4B290D00E1460A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				75FDF1792B4B2BCB00E1460A /* CategoryTableViewController.swift */,
+				7581077E2B4F518F0090D8CD /* ItemsTableViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -167,6 +170,7 @@
 			files = (
 				75FDF1612B4B290D00E1460A /* AppDelegate.swift in Sources */,
 				75FDF16B2B4B290D00E1460A /* Todoshka.xcdatamodeld in Sources */,
+				7581077F2B4F518F0090D8CD /* ItemsTableViewController.swift in Sources */,
 				75FDF1632B4B290D00E1460A /* SceneDelegate.swift in Sources */,
 				75FDF17A2B4B2BCB00E1460A /* CategoryTableViewController.swift in Sources */,
 			);
