@@ -29,41 +29,6 @@ class ItemsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return items.count
     }
-
-    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
-        
-        var textField = UITextField()
-        
-        let alert = UIAlertController(title: "Create Item", message: "", preferredStyle: .alert)
-        
-        alert.addTextField { alertTextField in
-            alertTextField.placeholder = "Item name"
-            textField = alertTextField
-        }
-        
-        let create = UIAlertAction(title: "Create", style: .default) { action in
-            guard let newItemTitle = textField.text else { return }
-            
-            let newItem = Item(context: self.context)
-            newItem.title = newItemTitle
-            newItem.done = false
-            newItem.count = 0
-            
-            newItem.parentCategory = self.selectedCategory
-            
-            self.items.append(newItem)
-            self.saveItems()
-        }
-        
-        let cancel = UIAlertAction(title: "Cancel", style: .destructive) { action in
-            alert.dismiss(animated: true)
-        }
-        
-        alert.addAction(cancel)
-        alert.addAction(create)
-        
-        present(alert, animated: true)
-    }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "itemCell", for: indexPath)
@@ -87,8 +52,62 @@ class ItemsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            tableView.deleteRows(at: [indexPath], with: .fade)
+            deleteItem(indexPath)
         }
+    }
+    
+    // MARK: - Table view delegate
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = items[indexPath.row]
+        
+        if item.done == false {
+            item.done = true
+            item.count += 1
+        } else {
+            item.done = false
+        }
+        
+        saveItems()
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+        tableView.reloadData()
+    }
+    
+    // MARK: - IBActions
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        
+        var textField = UITextField()
+        
+        let alert = UIAlertController(title: "Create Item", message: "", preferredStyle: .alert)
+        
+        alert.addTextField { alertTextField in
+            alertTextField.placeholder = "Item name"
+            textField = alertTextField
+        }
+        
+        let create = UIAlertAction(title: "Create", style: .default) { action in
+            guard let newItemTitle = textField.text else { return }
+            
+            let newItem = Item(context: self.context)
+            newItem.title = newItemTitle
+            newItem.done = false
+            newItem.count = 0
+            
+            newItem.parentCategory = self.selectedCategory
+            
+            self.items.append(newItem)
+            self.saveItems()
+            self.tableView.reloadData()
+        }
+        
+        let cancel = UIAlertAction(title: "Cancel", style: .destructive) { action in
+            alert.dismiss(animated: true)
+        }
+        
+        alert.addAction(cancel)
+        alert.addAction(create)
+        
+        present(alert, animated: true)
     }
     
 }
@@ -102,7 +121,6 @@ extension ItemsTableViewController {
         } catch {
             print("Error! saveItems(): \(error)")
         }
-        tableView.reloadData()
     }
     
     func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest(), predicate: NSPredicate? = nil) {
@@ -126,6 +144,13 @@ extension ItemsTableViewController {
         }
         tableView.reloadData()
         
+    }
+    
+    func deleteItem(_ index: IndexPath) {
+        context.delete(items[index.row])
+        items.remove(at: index.row)
+        saveItems()
+        tableView.deleteRows(at: [index], with: .fade)
     }
     
 }
