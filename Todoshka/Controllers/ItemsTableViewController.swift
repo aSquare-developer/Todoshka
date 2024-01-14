@@ -112,6 +112,35 @@ class ItemsTableViewController: UITableViewController {
     
 }
 
+// MARK: - SearchBar Delegate
+extension ItemsTableViewController: UISearchBarDelegate {
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let text = searchBar.text else { return }
+        
+        // 1. Create request
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        // 2. Create predicate
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", text)
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "count", ascending: false)]
+        
+        loadItems(with: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+        }
+        
+        DispatchQueue.main.async {
+            searchBar.resignFirstResponder()
+        }
+    }
+}
+
+
 // MARK: - Data Manipulations Methods
 extension ItemsTableViewController {
     
